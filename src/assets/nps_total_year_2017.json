@@ -1,0 +1,89 @@
+{
+    "geo": [
+        {
+            "periodDate": "2017Q1",
+            "geoid": "AR",
+            "label": "2017Q1",
+            "actual": "30.2",
+            "ytdActual": "30.2",
+            "priorYearActual": null
+        },
+        {
+            "periodDate": "2017Q1",
+            "geoid": "BR",
+            "label": "2017Q1",
+            "actual": "34.4",
+            "ytdActual": "32.4",
+            "priorYearActual": null
+        },
+        {
+            "periodDate": "2017Q1",
+            "geoid": "US",
+            "label": "2017Q1",
+            "actual": "40.8",
+            "ytdActual": "39.4",
+            "priorYearActual": null
+        },
+        {
+            "periodDate": "2017Q2",
+            "geoid": "BR",
+            "label": "2017Q2",
+            "actual": "52.4",
+            "ytdActual": "40.4",
+            "priorYearActual": null
+        },
+        {
+            "periodDate": "2017Q2",
+            "geoid": "AR",
+            "label": "2017Q2",
+            "actual": "53.1",
+            "ytdActual": "42.1",
+            "priorYearActual": null
+        },
+        {
+            "periodDate": "2017Q2",
+            "geoid": "US",
+            "label": "2017Q2",
+            "actual": "49.1",
+            "ytdActual": "44.6",
+            "priorYearActual": null
+        },
+        {
+            "periodDate": "2017Q3",
+            "geoid": "BR",
+            "label": "2017Q3",
+            "actual": "29.6",
+            "ytdActual": "43.8",
+            "priorYearActual": null
+        },
+        {
+            "periodDate": "2017Q3",
+            "geoid": "US",
+            "label": "2017Q3",
+            "actual": "38.4",
+            "ytdActual": "42.2",
+            "priorYearActual": null
+        },
+        {
+            "periodDate": "2017Q3",
+            "geoid": "AR",
+            "label": "2017Q3",
+            "actual": "45.1",
+            "ytdActual": "42.2",
+            "priorYearActual": null
+        },
+        {
+            "periodDate": "2017Q4",
+            "geoid": "AR",
+            "label": "2017Q4",
+            "actual": "24.6",
+            "ytdActual": "42.1",
+            "priorYearActual": null
+        }
+    ],
+    "source": "NPS",
+    "format": "Average/Int",
+    "lastRefreshDate": "2018-01-29T23:01:12.254Z",
+    "endDate": "2017Q4",
+    "startDate": "2017Q1"
+}
