@@ -11,10 +11,14 @@ import * as _ from 'lodash';
 })
 
 export class MapComponent implements OnInit {
-    country;
+
+    country = null;
+    countryCodes = {};
+    npsData = [];
     npsGeoIds = [];
-    customData = [];
+    dispalyPopUp = true;
     constructor(public mapService: MapService, private route: ActivatedRoute) { }
+
     ngOnInit() {
         this.route.queryParams.subscribe(params => {
             this.country = params['country'] ? params['country'] : null;
@@ -29,68 +33,88 @@ export class MapComponent implements OnInit {
 
     initialRequestWithOutSelectCountry() {
         this.mapService.getCountryCodes().subscribe((codes) => {
-            this.mapService.getNpsTotalYearData().subscribe((nps) => {
-                nps.geo.forEach((v) => {
-                    if (this.npsGeoIds.indexOf(v.geoid) === -1) {
-                        this.npsGeoIds.push(v.geoid);
-                    }
-                });
-                this.npsGeoIds.forEach((a) => {
-                    let value = [];
-                    nps.geo.forEach((b) => {
-                        if (a === b.geoid) {
-                            value.push(b);
-                        }
-                    });
-                    this.customData.push({
-                        id: codes[a],
-                        source: value
-                    })
-                });
-                this.mapInit();
-            });
-        })
-
+            this.countryCodes = codes;
+            if (this.country) {
+                this.dispalyPopUp = false;
+                this.heighLightCountry();
+            } else {
+                this.npsDataAssign();
+            }
+        });
     }
 
-    mapInit() {
-        var container = document.getElementById('popup');
-        var content = document.getElementById('popup-content');
-        var closer = document.getElementById('popup-closer');
-        var overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */({
+    heighLightCountry() {
+        let vectorLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                url: 'assets/countries.json',
+                format: new ol.format.GeoJSON()
+            }),
+            style: (feature) => {
+                if (feature.getId('id') === this.countryCodes[this.country.toUpperCase()]) {
+                    return new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: 'blue'
+                        }),
+                    });
+                }
+            }
+        });
+        let layer = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+        let map = new ol.Map({
+            layers: [layer, vectorLayer],
+            target: 'map-one',
+            controls: [],
+            interactions: ol.interaction.defaults({ mouseWheelZoom: false }),
+            view: new ol.View({
+                center: [0, 0],
+                zoom: 2.3
+            })
+        });
+    }
+
+    npsDataAssign() {
+        this.mapService.getNpsTotalYearData().subscribe((nps) => {
+            nps.geo.forEach((v) => {
+                if (this.npsGeoIds.indexOf(v.geoid) === -1) {
+                    this.npsGeoIds.push(v.geoid);
+                }
+            });
+            this.npsGeoIds.forEach((a) => {
+                let value = [];
+                nps.geo.forEach((b) => {
+                    if (a === b.geoid) {
+                        value.push(b);
+                    }
+                });
+                this.npsData.push({
+                    id: this.countryCodes[a],
+                    source: value
+                });
+            });
+            this.mapInitForNps();
+        });
+    }
+
+    mapInitForNps() {
+        let container = document.getElementById('popup');
+        let content = document.getElementById('popup-content');
+        let closer = document.getElementById('popup-closer');
+        let overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */({
             element: container,
             autoPan: true,
             autoPanAnimation: {
                 duration: 250
             }
         }));
-        var style = new ol.style.Style({
-            fill: new ol.style.Fill({
-                color: 'rgba(255, 255, 255, 0.6)'
-            }),
-            stroke: new ol.style.Stroke({
-                color: '#319FD3',
-                width: 1
-            }),
-            text: new ol.style.Text({
-                font: '12px Calibri,sans-serif',
-                fill: new ol.style.Fill({
-                    color: '#000'
-                }),
-                stroke: new ol.style.Stroke({
-                    color: '#fff',
-                    width: 3
-                })
-            })
-        });
-        let self = this;
-        var vectorLayer = new ol.layer.Vector({
+        let vectorLayer = new ol.layer.Vector({
             source: new ol.source.Vector({
                 url: 'assets/countries.json',
                 format: new ol.format.GeoJSON()
             }),
-            style: function (feature) {
-                if (_.filter(self.customData, { id: feature.getId('id') }).length > 0) {
+            style: (feature) => {
+                if (_.filter(this.npsData, { id: feature.getId('id') }).length > 0) {
                     if (feature.getId('id') === 'ARG') {
                         return new ol.style.Style({
                             fill: new ol.style.Fill({
@@ -110,19 +134,20 @@ export class MapComponent implements OnInit {
                             }),
                         });
                     }
-
                 }
             }
         });
 
-        var layer = new ol.layer.Tile({
+        let layer = new ol.layer.Tile({
             source: new ol.source.OSM()
         });
 
-        var map = new ol.Map({
+        let map = new ol.Map({
             layers: [layer, vectorLayer],
             target: 'map-one',
             overlays: [overlay],
+            controls: [],
+            interactions: ol.interaction.defaults({ mouseWheelZoom: false }),
             view: new ol.View({
                 center: [0, 0],
                 zoom: 2
@@ -135,17 +160,22 @@ export class MapComponent implements OnInit {
             return false;
         };
 
-        map.on('singleclick', function (evt) {
-            var coordinate = evt.coordinate;
-            var source = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-                return { cityId: feature.getId('id') };
+        map.on('singleclick', (evt) => {
+            let coordinate = evt.coordinate;
+            let source = map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+                return { cityId: feature.getId('id'), name: feature.get('name') };
             });
-            if (source && source.cityId && _.filter(self.customData, { id: source.cityId }).length > 0) {
-                let sou = _.filter(self.customData, { id: source.cityId });
-                let elements = "";
+            if (source && source.cityId && _.filter(this.npsData, { id: source.cityId }).length > 0) {
+                let sou = _.filter(this.npsData, { id: source.cityId });
+                let elements = '<div><h4 class="set-margincls">' + source.name + '</h2>'
+                elements += '<table class="table table-hover">'
+                elements += '<thead><tr><th>Date</th><th>actual</th><th>ytdActual</th></tr</thead><tbody>'
                 sou[0].source.forEach((val) => {
-                   elements += '<div><p>Date : ' + val.periodDate + '</p></div><div><p>actual : ' + val.actual + '</p></div><div><p>ytdActual : ' + val.ytdActual + '</p></div>'
+                    elements += '<tr><td>' + val.periodDate + '</td>';
+                    elements += '<td>' + val.actual + '</td>';
+                    elements += '<td>' + val.ytdActual + '</td></tr>';
                 });
+                elements += '</tbody></table></div>';
                 content.innerHTML = elements;
                 overlay.setPosition(coordinate);
             }
