@@ -17,6 +17,7 @@ export class MapComponent implements OnInit {
     npsData = [];
     npsGeoIds = [];
     dispalyPopUp = true;
+    latlog = [];
     constructor(public mapService: MapService, private route: ActivatedRoute) { }
 
     ngOnInit() {
@@ -36,7 +37,10 @@ export class MapComponent implements OnInit {
             this.countryCodes = codes;
             if (this.country) {
                 this.dispalyPopUp = false;
-                this.heighLightCountry();
+                this.mapService.getCountryLatAndLAng().subscribe((latlong) => {
+                    this.latlog = latlong[this.country.toLowerCase()];
+                    this.heighLightCountry();
+                })
             } else {
                 this.npsDataAssign();
             }
