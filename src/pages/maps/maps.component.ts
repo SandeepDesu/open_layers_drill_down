@@ -24,12 +24,16 @@ export class MapComponent implements OnInit {
         this.route.queryParams.subscribe(params => {
             this.country = params['country'] ? params['country'] : null;
         });
-        if (this.country) {
-            if (this.country.length === 3) {
-                this.country = this.country.substr(1);
+        
+        setTimeout(() => {
+            if (this.country) {
+                if (this.country.length === 3) {
+                    this.country = this.country.substr(1);
+                }
             }
-        }
-        this.initialRequestWithOutSelectCountry();
+            this.initialRequestWithOutSelectCountry();
+        }, 500);
+
     }
 
     initialRequestWithOutSelectCountry() {
