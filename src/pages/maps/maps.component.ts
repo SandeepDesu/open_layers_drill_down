@@ -37,9 +37,9 @@ export class MapComponent implements OnInit {
 
     initialRequestWithOutSelectCountry() {
         let mapdiv = document.getElementById('map-one');
-        mapdiv.setAttribute('style', 'height:' + (window.outerHeight - 100) + 'px');
+        mapdiv.setAttribute('style', 'height:' + (window.outerHeight - 70) + 'px');
         window.addEventListener('resize', () => {
-            mapdiv.setAttribute('style', 'height:' + (window.outerHeight - 100) + 'px');
+            mapdiv.setAttribute('style', 'height:' + (window.outerHeight - 70) + 'px');
         });
         this.mapService.getCountryCodes().subscribe((codes) => {
             this.countryCodes = codes;
