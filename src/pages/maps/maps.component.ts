@@ -24,7 +24,6 @@ export class MapComponent implements OnInit {
         this.route.queryParams.subscribe(params => {
             this.country = params['country'] ? params['country'] : null;
         });
-        
         setTimeout(() => {
             if (this.country) {
                 if (this.country.length === 3) {
@@ -37,14 +36,16 @@ export class MapComponent implements OnInit {
     }
 
     initialRequestWithOutSelectCountry() {
+        let mapdiv = document.getElementById('map-one');
+        mapdiv.setAttribute('style', 'height:' + (window.outerHeight - 100) + 'px');
+        window.addEventListener('resize', () => {
+            mapdiv.setAttribute('style', 'height:' + (window.outerHeight - 100) + 'px');
+        });
         this.mapService.getCountryCodes().subscribe((codes) => {
             this.countryCodes = codes;
             if (this.country) {
                 this.dispalyPopUp = false;
-                this.mapService.getCountryLatAndLAng().subscribe((latlong) => {
-                    this.latlog = latlong[this.country.toLowerCase()];
-                    this.heighLightCountry();
-                })
+                this.heighLightCountry();
             } else {
                 this.npsDataAssign();
             }
@@ -73,8 +74,7 @@ export class MapComponent implements OnInit {
         let map = new ol.Map({
             layers: [layer, vectorLayer],
             target: 'map-one',
-            controls: [],
-            interactions: ol.interaction.defaults({ mouseWheelZoom: false }),
+            interactions: ol.interaction.defaults({ mouseWheelZoom: false, dragPan: false }),
             view: new ol.View({
                 center: [0, 0],
                 zoom: 2.3
@@ -154,11 +154,10 @@ export class MapComponent implements OnInit {
             layers: [layer, vectorLayer],
             target: 'map-one',
             overlays: [overlay],
-            controls: [],
-            interactions: ol.interaction.defaults({ mouseWheelZoom: false }),
+            interactions: ol.interaction.defaults({ mouseWheelZoom: false, dragPan: false }),
             view: new ol.View({
                 center: [0, 0],
-                zoom: 2
+                zoom: 2.3
             })
         });
 

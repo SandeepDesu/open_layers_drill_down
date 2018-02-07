@@ -35,6 +35,11 @@ export class MapService {
 
     }
 
+    getMissouri_fipsgeom() {
+        return this.http.get('assets/missouri_fipsgeom.json')
+            .map((res: any) => res.json());
+    }
+
     getNpsTotalYearData() {
         return this.http.get('assets/nps_total_year_2017.json')
             .map((res: any) => res.json());
@@ -49,11 +54,5 @@ export class MapService {
         return this.http.get('assets/country_codes.json')
             .map((res: any) => res.json());
     }
-
-    getCountryLatAndLAng() {
-        return this.http.get('assets/country_code_at_long-array.json')
-            .map((res: any) => res.json());
-    }
-
 
 }
