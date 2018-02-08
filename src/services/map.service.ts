@@ -36,7 +36,7 @@ export class MapService {
     }
 
     getMissouri_fipsgeom() {
-        return this.http.get('assets/missouri_fipsgeom.json')
+        return this.http.get('assets/nps_new_17-18.json')
             .map((res: any) => res.json());
     }
 
